@@ -34,7 +34,9 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RestResource;
 #end
 
-
+#if ( $entity.hasCompositePrimaryKey() )
+$generator.generate($target.entityName ,  "${entity.name}KeyConverter.java", "${target.folder}/converter", "compositekey_converter.vm"  )
+#end 
 
 /**
  * Spring JPA Repository for ${entity.name}

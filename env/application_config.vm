@@ -11,8 +11,16 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguration;
 
+#set($AtLeastOneCompositeKey = "false")
 #foreach( $entity in $model.allEntites)
 import ${ROOT_PKG}.validator.${entity.name}Validator;
+#if($entity.hasCompositePrimaryKey())
+#set($AtLeastOneCompositeKey = "true")
+import ${ROOT_PKG}.repository.converter.${entity.name}KeyConverter;
+#end
+#end
+#if($AtLeastOneCompositeKey == "true")
+import org.springframework.core.convert.support.ConfigurableConversionService;
 #end
 
 /**
@@ -45,6 +53,34 @@ public class ApplicationConfig extends RepositoryRestMvcConfiguration {
     public ${entity.name}Validator beforeCreate${entity.name}Validator() {
         return new ${entity.name}Validator();
     }
+#end
+
+#if($AtLeastOneCompositeKey == "true")
+    /**
+     * Add all converters for composite keys
+     */
+	@Override
+	protected void configureConversionService(ConfigurableConversionService conversionService) {
+		super.configureConversionService(conversionService);
+#foreach( $entity in $model.allEntites)
+#if($entity.hasCompositePrimaryKey())
+		conversionService.addConverter(this.${entity.name.toLowerCase()}KeyConverter());
+#end
+#end
+	}
+#end
+
+#foreach( $entity in $model.allEntites)
+#if($entity.hasCompositePrimaryKey())
+	/**
+     * Converter for the composite key in the ${entity.name} entity
+     * @return the converter
+     */
+    @Bean
+    public ${entity.name}KeyConverter ${entity.name.toLowerCase()}KeyConverter() {
+    	return new ${entity.name}KeyConverter();
+    }
+#end
 #end
 
 }
