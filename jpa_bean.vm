@@ -31,14 +31,12 @@ package ${target.javaPackageFromFolder($SRC)};
 
 import java.io.Serializable;
 
-//import javax.validation.constraints.* ;
-//import org.hibernate.validator.constraints.* ;
-
-#foreach( $import in $entity.imports )
+#foreach( $import in $java.imports($entity) )
 import $import;
 #end
 
-#foreach( $import in $jpa.imports($entity) )
+
+#foreach( $import in $jpa.imports($entity))
 import $import;
 #end
 import javax.xml.bind.annotation.XmlAccessType;
@@ -48,7 +46,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 #end
 #if ($existToMany == "true")
-import java.util.List;
 #end
 
 /**
@@ -216,14 +213,11 @@ $jpa.linkAnnotations(4, $link, $allMappedFields )
     //----------------------------------------------------------------------
     // toString METHOD
     //----------------------------------------------------------------------
-    public String toString()
-    {
 #set( $attributes = $entity.getAttributesByCriteria( $const.NOT_KEY, $const.NOT_TEXT, $const.NOT_IN_SELECTED_LINKS ) )    
-$entity.toStringMethodCodeLinesWithKey(8, $attributes, "compositePrimaryKey") 
-## The "key" is used only if composite key
-#foreach( $field in $entity.getAttributesByCriteria( $const.TEXT ) )
-		// $field.name is not in toString because it's a "long text" field
-#end  
-    }
+#set($embeddedIdName = "")
+#if($entity.hasCompositePrimaryKey())
+#set($embeddedIdName = "compositePrimaryKey")
+#end
+$java.toStringMethod( $entity, $attributes, $embeddedIdName, 4 )
 
 }

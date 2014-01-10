@@ -6,10 +6,10 @@ package ${target.javaPackageFromFolder($SRC)};
 #set( $currentClassName = "${entity.name}Key" )
 import java.io.Serializable;
 
-#foreach( $import in $entity.importsForKeyFields )
-import $import;
-#end
-## #foreach( $import in $entity.importsJpa )
+##foreach( $import in $java.imports($entity) )
+##import $import;
+###end
+
 #foreach( $import in $jpa.imports($entity))
 import $import;
 #end

@@ -96,9 +96,9 @@ If version on the file is newer than the document version created by this API : 
 
 Getting Started 
 ----------------
-You can deploy the project under your server or launch ``` mvn tomcat7:run ```
+You can deploy the project under your server or launch ``` mvn tomcat7:run ```  
 To browse the resources, there is two ways :
-- Access URL from your web browser
+- Access URL from your web browser (http://localhost:8989/)
 - Launch the spring rest-shell (see : [https://github.com/spring-projects/rest-shell](https://github.com/spring-projects/rest-shell)
 
 Enjoy!
