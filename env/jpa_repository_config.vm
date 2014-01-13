@@ -5,7 +5,7 @@
 #if ( $databases.hasDatabase( $model.databaseId ) )
 #set($database = $databases.getDatabase( $model.databaseId )) 
 #else
-#error("No database found for this model")
+#error("No database found for this model or the databases.dbcfg file not found under the same directory as the .dbrep model file.")
 #end
 package ${target.javaPackageFromFolder($SRC)};
 
