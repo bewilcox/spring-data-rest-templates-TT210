@@ -81,8 +81,9 @@ The database name is bookstore and user/pwd is root/admin.
 Getting Started 
 ----------------
 You can deploy the project under your server or launch ``` mvn tomcat7:run ```  
-To browse the resources, there is two ways :
+To browse the resources, here are several ways to:
 - Access URL from your web browser (http://localhost:8989/)
+- Use Postman extension for Chrome
 - Launch the spring rest-shell (see : [https://github.com/spring-projects/rest-shell](https://github.com/spring-projects/rest-shell)
 
 Enjoy!

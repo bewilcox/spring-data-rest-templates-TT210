@@ -20,32 +20,25 @@ $generator.generate($target.entityName ,  "${entity.name}Key.java", $target.fold
 #end
 ##--- @Transient usage count ( number of xxxToMany links ) 
 #set ( $TRANSIENT_COUNT = 0 )
-#set ($existToMany = "false")
 #foreach( $link in $entity.selectedLinks )
 #if ( $link.isCardinalityManyToMany() || $link.isCardinalityOneToMany() )
 #set ( $TRANSIENT_COUNT = $TRANSIENT_COUNT + 1 )
-#set ($existToMany = "true")
 #end
 #end
+
 package ${target.javaPackageFromFolder($SRC)};
 
 import java.io.Serializable;
+
+//import javax.validation.constraints.* ;
+//import org.hibernate.validator.constraints.* ;
 
 #foreach( $import in $java.imports($entity) )
 import $import;
 #end
 
-
-#foreach( $import in $jpa.imports($entity))
+#foreach( $import in $jpa.imports($entity) )
 import $import;
-#end
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
-#if (  $TRANSIENT_COUNT > 0 ) 
-import javax.xml.bind.annotation.XmlTransient;
-#end
-#if ($existToMany == "true")
 #end
 
 /**
@@ -54,11 +47,13 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author Telosys Tools Generator
  *
  */
-@XmlRootElement  // JAXB annotation for REST Web Services
-@XmlAccessorType(XmlAccessType.PROPERTY) // JAXB accessor = getter/setter pair
-## $entity.jpaAnnotations
-$jpa.entityAnnotations(0,$entity)
-public class $entity.name implements Serializable
+
+$jpa.entityAnnotations(0, $entity)
+// Define named queries here
+@NamedQueries ( {
+  @NamedQuery ( name="${entity.name}.countAll", query="SELECT COUNT(x) FROM ${entity.name} x" )
+} )
+public class ${entity.name} implements Serializable
 {
     private static final long serialVersionUID = 1L;
 
@@ -74,9 +69,8 @@ public class $entity.name implements Serializable
     // ENTITY PRIMARY KEY ( BASED ON A SINGLE FIELD )
     //----------------------------------------------------------------------
 #foreach( $field in $entity.keyAttributes )
-##$field.jpaAnnotations(4)
-$jpa.fieldAnnotations(4,$field)
-    private $field.formatedType(10) $field.formatedName(12) #if($field.hasInitialValue())= ${field.initialValue} #end;
+$jpa.fieldAnnotations(4, $field)
+    private $field.formattedType(10) $field.formattedName(12) #if($field.hasInitialValue())= ${field.initialValue} #end;
 #end
 
 #end
@@ -87,15 +81,14 @@ $jpa.fieldAnnotations(4,$field)
 #foreach( $field in $dataFields )
 ## #if ( $field.isUsedInLinkJoinColumn( $entity.selectedLinks ) != true )
 ## $field.jpaAnnotations(4)
-##     private $field.formatedType(10) $field.formatedName(12) #if($field.hasInitialValue())= ${field.initialValue} #end;
+##     private $field.formattedType(10) $field.formattedName(12) #if($field.hasInitialValue())= ${field.initialValue} #end;
 ##     
 ## #else
 ##     // "$field.name" (column "$field.databaseName") is not mapped as an attribute because it is used in a link   
 ##     
 ## #end
-##$field.jpaAnnotations(4)
-$jpa.fieldAnnotations(4,$field)
-    private $field.formatedType(10) $field.formatedName(12) #if($field.hasInitialValue())= ${field.initialValue} #end;
+$jpa.fieldAnnotations(4, $field)
+    private $field.formattedType(10) $field.formattedName(12) #if($field.hasInitialValue())= ${field.initialValue} #end;
 
 #end
 #foreach( $field in $linkFields )
@@ -108,9 +101,8 @@ $jpa.fieldAnnotations(4,$field)
     //----------------------------------------------------------------------
 ## #foreach( $link in $entity.links )
 #foreach( $link in $entity.selectedLinks )
-## $link.jpaAnnotations(4)
-$jpa.linkAnnotations(4, $link, $allMappedFields )
-    private $link.formatedType(10) $link.formatedName(12);
+$jpa.linkAnnotations(4, $link, $allMappedFields)
+    private ${link.formattedFieldType(0)} $link.formattedFieldName(12);
 
 #end
 
@@ -194,17 +186,14 @@ $jpa.linkAnnotations(4, $link, $allMappedFields )
     //----------------------------------------------------------------------
 ## #foreach( $link in $entity.links )
 #foreach( $link in $entity.selectedLinks )
-#if ( $link.isCardinalityManyToMany() || $link.isCardinalityOneToMany() ) 
-    @XmlTransient
-#end
-#if ( $link.setter )    public void ${link.setter}( ${link.linkType} ${link.javaName} )
+#if ( $link.setter )    public void ${link.setter}( ${link.formattedFieldType(0)} ${link.fieldName} )
     {
-        this.${link.javaName} = ${link.javaName};
+        this.${link.fieldName} = ${link.fieldName};
     }
 #end
-#if ( $link.getter )    public ${link.linkType} ${link.getter}()
+#if ( $link.getter )    public ${link.formattedFieldType(0)} ${link.getter}()
     {
-        return this.${link.javaName};
+        return this.${link.fieldName};
     }
 #end
 
@@ -213,11 +202,5 @@ $jpa.linkAnnotations(4, $link, $allMappedFields )
     //----------------------------------------------------------------------
     // toString METHOD
     //----------------------------------------------------------------------
-#set( $attributes = $entity.getAttributesByCriteria( $const.NOT_KEY, $const.NOT_TEXT, $const.NOT_IN_SELECTED_LINKS ) )    
-#set($embeddedIdName = "")
-#if($entity.hasCompositePrimaryKey())
-#set($embeddedIdName = "compositePrimaryKey")
-#end
-$java.toStringMethod( $entity, $attributes, $embeddedIdName, 4 )
-
+$java.toStringMethod($entity, $dataFields, "compositePrimaryKey", 4)
 }

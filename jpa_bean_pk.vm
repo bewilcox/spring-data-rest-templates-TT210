@@ -6,10 +6,11 @@ package ${target.javaPackageFromFolder($SRC)};
 #set( $currentClassName = "${entity.name}Key" )
 import java.io.Serializable;
 
-##foreach( $import in $java.imports($entity) )
-##import $import;
-###end
-
+## #foreach( $import in $entity.importsForKeyFields )
+#foreach( $import in $java.imports($entity.keyAttributes) )
+import $import;
+#end
+## #foreach( $import in $entity.importsJpa )
 #foreach( $import in $jpa.imports($entity))
 import $import;
 #end
@@ -31,7 +32,7 @@ public class $currentClassName implements Serializable
 #foreach( $field in $entity.keyAttributes )
 ##$field.jpaAnnotationsEmbeddedID(4)
 $jpa.embeddedIdAnnotations(4, $field)
-    private $field.formatedType(10) $field.formatedName(12) #if($field.hasInitialValue())= ${field.initialValue} #end;
+    private $field.formattedType(10) $field.formattedName(12) #if($field.hasInitialValue())= ${field.initialValue} #end;
     
 #end
 
@@ -43,7 +44,7 @@ $jpa.embeddedIdAnnotations(4, $field)
         super();
     }
 
-    public ${entity.name}Key( $fn.argumentsListWithType($entity.keyAttributes) )
+    public ${currentClassName}( $fn.argumentsListWithType($entity.keyAttributes) )
     {
         super();
 #foreach( $field in $entity.keyAttributes )

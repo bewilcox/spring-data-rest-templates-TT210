@@ -23,7 +23,7 @@ import ${entity.fullName}Key ;
 #if ($fn.size($entity.selectedLinks) > 0 )
 #foreach( $link in $entity.selectedLinks )
 #if ($link.isCardinalityManyToOne())
-import $ENTITY_PKG.$link.javaTypeFull;
+import $link.targetEntityFullType;
 #set($existManyToOne = "true")
 #end
 #end
@@ -48,9 +48,9 @@ public interface ${entity.name}Repository extends CrudRepository<${entity.name},
 
 #foreach( $link in $entity.selectedLinks )
 #if ($link.isCardinalityManyToOne())
-	@RestResource(rel="by${link.targetEntityType}", path="by${link.targetEntityType}")
-	public List<${entity.name}> findBy${link.targetEntityType} (
-			@Param("${link.targetEntityType.toLowerCase()}") ${link.targetEntityType} ${link.targetEntityType.toLowerCase()});
+	@RestResource(rel="by${link.targetEntitySimpleType}", path="by${link.targetEntitySimpleType}")
+	public List<${entity.name}> findBy${link.targetEntitySimpleType} (
+			@Param("${link.targetEntitySimpleType.toLowerCase()}") ${link.targetEntitySimpleType} ${link.targetEntitySimpleType.toLowerCase()});
 
 #end
 #end

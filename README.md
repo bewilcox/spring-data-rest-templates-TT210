@@ -3,7 +3,7 @@ spring-data-rest-templates-TT210
 
 Telosys Tools bundle (2.1.0 or newer) for Spring Data Rest generation (Support of HATEOAS)
 
-Expose your JPA entities with a RESTful API (HATEOAS Support)
+Expose your JPA entities with a RESTful API (HATEOAS / HAL Support)
 
 This bundle allows you to generate for each of your database tables :
 - The associated JPA entities
